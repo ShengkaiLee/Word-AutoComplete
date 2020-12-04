@@ -1,3 +1,9 @@
+module WordClean
+(
+    wordFilter,
+    wordClean
+ ) where
+
 import Data.Char ( isSpace, isAlpha, toLower )
 import System.IO ( openFile, hGetContents, IOMode(ReadMode) )
 import Control.Parallel.Strategies ( parBuffer, rdeepseq, using )
