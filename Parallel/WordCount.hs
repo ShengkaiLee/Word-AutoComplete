@@ -3,16 +3,20 @@ import System.Exit(die)
 import WordClean(wordClean)
 --import MapReduce (mapReduce)
 import qualified Data.Map as M
-import Data.List.Split()
+import Data.List.Split( chunksOf )
+import Control.Parallel ( pseq )
 import Control.Parallel.Strategies
     ( parList, rdeepseq, using, NFData )
 
+chunkSize :: Int
+chunkSize = 20
 
 wordMapper :: [String] -> [(String, Int)]
 wordMapper w = map (\x -> (x, 1)) w
 
 parWordMapper :: [String] -> [(String, Int)]
-parWordMapper w = wordMapper w `using` parList rdeepseq
+parWordMapper w = concat ((map wordMapper w') `using` parList rdeepseq)
+                where w' = chunksOf chunkSize w
 
 wordReducer :: (Ord k, Num a) => [(k, a)] -> [(k, a)]
 wordReducer l =  M.toList $ M.fromListWith (+) l
@@ -28,8 +32,10 @@ main = do
         [filename] -> do
             content <- wordClean filename
             let input = words $ unwords $ lines content
-            let output = parWordReducer $ parWordMapper input
-            writeFile "sqe.txt" (show output)
+            let mapOutput = parWordMapper input
+            let reduceOutput = parWordReducer mapOutput
+            let output = pseq mapOutput reduceOutput
+            writeFile "pal-word-sqe.txt" (show mapOutput)
         _ -> do 
             pn <- getProgName
             die $ "Usage: " ++ pn ++ " <filename>"
