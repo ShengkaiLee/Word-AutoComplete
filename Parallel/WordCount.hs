@@ -35,7 +35,7 @@ main = do
             let mapOutput = parWordMapper input
             let reduceOutput = parWordReducer mapOutput
             let output = pseq mapOutput reduceOutput
-            writeFile "pal-word-sqe.txt" (show mapOutput)
+            writeFile "WordCount.txt" (show output)
         _ -> do 
             pn <- getProgName
             die $ "Usage: " ++ pn ++ " <filename>"
