@@ -8,22 +8,22 @@ import Control.Parallel.Strategies
     
     
 
-mapper :: Int -> [String] -> [(String, Int)]
-mapper n str
-    | n <= length str = (unwords ngram, 1::Int) : mapper n str'
+ngramMapper :: Int -> [String] -> [(String, Int)]
+ngramMapper n str
+    | n <= length str = (unwords ngram, 1::Int) : ngramMapper n str'
     | otherwise = []
     where ngram = take n str
           str'  = drop (1::Int) str
 
-par_mapper :: Int -> [[String]] -> [(String, Int)]
-par_mapper n l = concat (map (mapper n) l) `using` parList rdeepseq
+parNgramMapper :: Int -> [[String]] -> [(String, Int)]
+parNgramMapper n l = concat (map (ngramMapper n) l) `using` parList rdeepseq
 
-reducer :: (Ord k, Num a) => [(k, a)] -> [(k, a)]
-reducer l = toList $ fromListWith (\num1 num2 -> num1 + num2) l
+ngramReducer :: (Ord k, Num a) => [(k, a)] -> [(k, a)]
+ngramReducer l = toList $ fromListWith (\num1 num2 -> num1 + num2) l
 
-par_reducer :: (Ord k, Num a, NFData k, NFData a) => [(k, a)] -> [(k, a)]
-par_reducer l = reducer $ concat 
-                ((map reducer l') `using` parList rdeepseq)
+parNgramReducer :: (Ord k, Num a, NFData k, NFData a) => [(k, a)] -> [(k, a)]
+parNgramReducer l = ngramReducer $ concat 
+                ((map ngramReducer l') `using` parList rdeepseq)
                 where l' = chunksOf 9 l
 
 {-

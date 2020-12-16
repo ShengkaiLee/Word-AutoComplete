@@ -1,6 +1,4 @@
-import System.Environment(getArgs, getProgName)
-import System.Exit(die)
-import WordClean(wordClean)
+module WordCount_Sequential where
 import qualified Data.Map as M
 
 
@@ -10,6 +8,7 @@ wordMapper w = map (\x -> (x, 1)) w
 wordReducer :: (Ord k, Num a) => [(k, a)] -> [(k, a)]
 wordReducer l =  M.toList $ M.fromListWith (+) l
 
+{-
 main :: IO ()
 main = do 
     args <- getArgs
@@ -22,3 +21,4 @@ main = do
         _ -> do 
             pn <- getProgName
             die $ "Usage: " ++ pn ++ " <filename>"
+-}

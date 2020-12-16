@@ -1,7 +1,7 @@
-import System.Environment(getArgs, getProgName)
-import System.Exit(die)
+module WordCount where
+--import System.Environment(getArgs, getProgName)
+--import System.Exit(die)
 import WordClean(wordClean)
---import MapReduce (mapReduce)
 import qualified Data.Map as M
 import Data.List.Split( chunksOf )
 import Control.Parallel ( pseq )
@@ -24,7 +24,7 @@ wordReducer l =  M.toList $ M.fromListWith (+) l
 parWordReducer :: (Ord k, Num a, NFData k, NFData a) => [(k, a)] -> [(k, a)]
 parWordReducer l = wordReducer l `using` parList rdeepseq
 
-
+{-
 main :: IO ()
 main = do 
     args <- getArgs
@@ -39,3 +39,4 @@ main = do
         _ -> do 
             pn <- getProgName
             die $ "Usage: " ++ pn ++ " <filename>"
+-}
