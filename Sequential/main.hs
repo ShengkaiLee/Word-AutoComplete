@@ -30,7 +30,7 @@ main = do
     content <- wordClean filename
     let input = words $ unwords $ lines content
     let output = mapreduce (read n::Int) input 
-    writeFile "output.txt" (show output)
+    writeFile "../Output/seq_output.txt" (show output)
     putStrLn "Done loading!"
     enterLoop output
     

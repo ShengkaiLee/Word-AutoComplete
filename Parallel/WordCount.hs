@@ -6,23 +6,26 @@ import qualified Data.Map as M
 import Data.List.Split( chunksOf )
 import Control.Parallel ( pseq )
 import Control.Parallel.Strategies
-    ( parList, rdeepseq, using, NFData )
+    ( parList, parBuffer, rdeepseq, using, NFData )
 
 chunkSize :: Int
 chunkSize = 20
+
+bufferSize :: Int
+bufferSize = 4
 
 wordMapper :: [String] -> [(String, Int)]
 wordMapper w = map (\x -> (x, 1)) w
 
 parWordMapper :: [String] -> [(String, Int)]
-parWordMapper w = concat ((map wordMapper w') `using` parList rdeepseq)
-                where w' = chunksOf chunkSize w
+parWordMapper w =  wordMapper w `using` parBuffer bufferSize rdeepseq
 
 wordReducer :: (Ord k, Num a) => [(k, a)] -> [(k, a)]
 wordReducer l =  M.toList $ M.fromListWith (+) l
 
 parWordReducer :: (Ord k, Num a, NFData k, NFData a) => [(k, a)] -> [(k, a)]
-parWordReducer l = wordReducer l `using` parList rdeepseq
+parWordReducer l = concat ((map wordReducer l') `using` parList rdeepseq)
+                    where l' = chunksOf chunkSize l
 
 {-
 main :: IO ()

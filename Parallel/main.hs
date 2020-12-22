@@ -30,7 +30,7 @@ main = do
     putStrLn "Loading Dictionary ..."
     content <- wordClean filename
     let output = processMapReduce (read n::Int) content 
-    writeFile "output.txt" (show output)
+    writeFile "../Output/par_output.txt" (show output)
     putStrLn "Done loading!"
     enterLoop output
     --print $ head $ suggestion_sort $ par_suggestion_filer str output
