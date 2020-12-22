@@ -9,7 +9,7 @@ import Control.Parallel.Strategies
     ( parList, parBuffer, rdeepseq, using, NFData )
 
 chunkSize :: Int
-chunkSize = 20
+chunkSize = 100
 
 bufferSize :: Int
 bufferSize = 4
@@ -24,7 +24,7 @@ wordReducer :: (Ord k, Num a) => [(k, a)] -> [(k, a)]
 wordReducer l =  M.toList $ M.fromListWith (+) l
 
 parWordReducer :: (Ord k, Num a, NFData k, NFData a) => [(k, a)] -> [(k, a)]
-parWordReducer l = concat ((map wordReducer l') `using` parList rdeepseq)
+parWordReducer l = wordReducer $ concat ((map wordReducer l') `using` parList rdeepseq)
                     where l' = chunksOf chunkSize l
 
 {-
